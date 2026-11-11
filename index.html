@@ -242,9 +242,11 @@ td .t{font-weight:700}
         <label class="f">Starts<input type="time" id="fStart"></label>
         <label class="f">Ends (optional)<input type="time" id="fEnd"></label>
       </div>
-      <div class="f">Days
+      <div class="f">Repeat on
         <div class="toggles" id="fDays" role="group" aria-label="Days of the week"></div>
+        <span class="muted small" style="font-weight:500">Pick no days for a one-time activity.</span>
       </div>
+      <label class="f" id="fActDateWrap">Date (one time)<input type="date" id="fActDate"></label>
     </div>
 
     <div id="fsGoal" class="sec">
@@ -334,6 +336,12 @@ function daysText(days){
   if(s.size === 2 && s.has(0) && s.has(6)) return "Weekends";
   return WEEK_ORDER.filter(d=>s.has(d)).map(d=>DOW_SHORT[d]).join(", ") || "No days";
 }
+const isOnce = it => !(it.days||[]).length;
+function schedText(it){
+  if(!isOnce(it)) return daysText(it.days);
+  const d = parseYmd(it.date);
+  return d ? "Once · " + fmtDate(d) : "Once";
+}
 function timeSpan(it){ return it.end ? `${it.start}–${it.end}` : it.start; }
 function durMin(it){ const a = mins(it.start), b = mins(it.end); if(a==null || b==null) return 0; return b > a ? b - a : 0; }
 const isAllDay = it => it.type === "goal" || (it.type === "reminder" && !it.time);
@@ -359,8 +367,8 @@ function remOccurrences(it, from, to, limit=500){
   return out;
 }
 const nextRem = it => remOccurrences(it, today0(), null, 1)[0] || null;
-const actOn = (it, d) => (it.days||[]).includes(d.getDay());
-function nextActDate(it){ const t = today0(); for(let i=0;i<7;i++){ const d = addDays(t,i); if(actOn(it,d)) return d; } return t; }
+const actOn = (it, d) => isOnce(it) ? it.date === ymd(d) : it.days.includes(d.getDay());
+function nextActDate(it){ if(isOnce(it)) return parseYmd(it.date) || today0(); const t = today0(); for(let i=0;i<7;i++){ const d = addDays(t,i); if(actOn(it,d)) return d; } return t; }
 
 function goalStats(g){
   const t = today0();
@@ -428,7 +436,7 @@ function eventFor(it){
     const dur = durMin(it) || 30;
     ev.start = icsDateTime(d, it.start); ev.end = icsDateTime(d, plusTime(it.start, dur)); ev.endNextDay = mins(it.start) + dur >= 1440; ev.day = d;
     const days = it.days || [];
-    ev.rrule = days.length === 7 ? "FREQ=DAILY" : `FREQ=WEEKLY;BYDAY=${WEEK_ORDER.filter(x=>days.includes(x)).map(x=>RRULE_DAY[x]).join(",")}`;
+    ev.rrule = !days.length ? "" : days.length === 7 ? "FREQ=DAILY" : `FREQ=WEEKLY;BYDAY=${WEEK_ORDER.filter(x=>days.includes(x)).map(x=>RRULE_DAY[x]).join(",")}`;
   } else {
     const d = parseYmd(it.deadline) || today0();
     ev.summary = `Goal deadline: ${it.title}`;
@@ -441,7 +449,7 @@ function eventFor(it){
 }
 function plusTime(t, add){ const m = (mins(t) + add) % 1440; return `${pad(Math.floor(m/60))}:${pad(m%60)}`; }
 // What the Calendar event depends on (not today's date), so an unchanged item stays "In Calendar".
-const SIG_FIELDS = {reminder:["title","notes","date","time","repeat","alerts"], activity:["title","notes","start","end","days","alerts"], goal:["title","notes","deadline","alerts"]};
+const SIG_FIELDS = {reminder:["title","notes","date","time","repeat","alerts"], activity:["title","notes","start","end","days","date","alerts"], goal:["title","notes","deadline","alerts"]};
 const eventSig = it => JSON.stringify((SIG_FIELDS[it.type]||[]).map(k => it[k] ?? ""));
 const calState = it => (it.cal && it.cal.sig === eventSig(it)) ? "in" : "pending";
 
@@ -514,18 +522,23 @@ function actRow(it, withCheck, date){
     ? `<button class="check" aria-pressed="${done}" ${future?"disabled":""} aria-label="Mark ${esc(it.title)} done on ${esc(fmtDate(day))}" data-done="${esc(it.id)}" data-date="${key}">${CHECK_SVG}</button>`
     : `<div class="when act"><div class="tm num">${esc(it.start||"")}</div></div>`;
   const daysHtml = `<span class="days">${WEEK_ORDER.map(d=>`<i class="${(it.days||[]).includes(d)?"on":""}">${DOW_LETTER[d]}</i>`).join("")}</span>`;
-  return `<div class="row">
+  const pastOnce = !withCheck && isOnce(it) && (parseYmd(it.date) || today0()) < today0();
+  return `<div class="row${pastOnce?" dim":""}">
     ${left}
     <button class="main" data-edit="${esc(it.id)}" style="background:none;border:0;padding:0;text-align:left">
       <div class="t">${esc(it.title)}</div>
-      <div class="s num">${esc(timeSpan(it))}${withCheck?"":" · "+esc(daysText(it.days))}</div>
-      ${withCheck?"":`<div style="margin-top:5px">${daysHtml}</div>`}
+      <div class="s num">${esc(timeSpan(it))}${withCheck?"":" · "+esc(schedText(it))}</div>
+      ${withCheck || isOnce(it) ?"":`<div style="margin-top:5px">${daysHtml}</div>`}
     </button>
     <div class="right">${withCheck?`<span class="num">${esc(it.start)}</span>`:streakText(it)}${calChip(it)}</div>
   </div>`;
 }
 function streakText(it){
   const t = today0(); let n = 0, sched = 0;
+  if(isOnce(it)){
+    const d = parseYmd(it.date) || t;
+    return (it.doneDates||[]).includes(it.date) ? `<span>Done</span>` : `<span class="num">${relDays(daysBetween(t, d))}</span>`;
+  }
   for(let i=0;i<7;i++){ const d = addDays(t,-i); if(actOn(it,d)){ sched++; if((it.doneDates||[]).includes(ymd(d))) n++; } }
   return `<span class="num">${n}/${sched} this week</span>`;
 }
@@ -651,7 +664,9 @@ function viewReminders(){
   </div>`;
 }
 function viewActivities(){
-  const acts = items.filter(i=>i.type==="activity").sort((a,b)=>mins(a.start)-mins(b.start));
+  const t0 = today0();
+  const pastOnce = a => isOnce(a) && (parseYmd(a.date) || t0) < t0;
+  const acts = items.filter(i=>i.type==="activity").sort((a,b)=>(pastOnce(a)-pastOnce(b)) || (isOnce(a)-isOnce(b)) || (isOnce(a) && (a.date||"").localeCompare(b.date||"")) || (mins(a.start)-mins(b.start)));
   const weekly = acts.reduce((s,a)=>s + durMin(a)*(a.days||[]).length, 0);
   return `<div class="view">
     ${calBanner()}
@@ -702,7 +717,7 @@ function viewReport(){
 
   const actTable = `<section class="sec"><div class="sec-head"><h3>Activities · ${N?`last ${N} days`:"since added"}</h3><span class="chip act num">${(weekly/60).toFixed(1)} h/week</span></div>
     ${acts.length ? `<div class="tbl-wrap"><table><thead><tr><th>Activity</th><th>When</th><th>Kept</th></tr></thead><tbody>
-      ${acts.map(a=>{ const s = actStats(a); return `<tr><td><span class="t">${esc(a.title)}</span></td><td class="num">${esc(timeSpan(a))}<br><span class="muted">${esc(daysText(a.days))}</span></td><td class="num" style="white-space:nowrap">${s.done}/${s.sched} <span class="muted">(${Math.round(s.pct*100)}%)</span><div class="minibar"><span style="width:${(s.pct*100).toFixed(0)}%"></span></div></td></tr>`; }).join("")}
+      ${acts.map(a=>{ const s = actStats(a); return `<tr><td><span class="t">${esc(a.title)}</span></td><td class="num">${esc(timeSpan(a))}<br><span class="muted">${esc(schedText(a))}</span></td><td class="num" style="white-space:nowrap">${s.done}/${s.sched} <span class="muted">(${Math.round(s.pct*100)}%)</span><div class="minibar"><span style="width:${(s.pct*100).toFixed(0)}%"></span></div></td></tr>`; }).join("")}
     </tbody></table></div>` : `<div class="muted small">No activities.</div>`}</section>`;
 
   const goalTable = `<section class="sec"><div class="sec-head"><h3>Goals · all</h3><span class="chip goal num">${goals.length}</span></div>
@@ -767,7 +782,7 @@ function openSheet(it, type){
   edit = it ? clone(it) : {
     id: uid(), type: type || "reminder", title:"", notes:"", created: t,
     date: t, time:"", repeat:"none",
-    start:"07:00", end:"", days:[0,1,2,3,4,5,6], doneDates:[],
+    start:"07:00", end:"", days:[], doneDates:[],
     deadline:"", done:false, alerts:null
   };
   edit.start_g = (it && edit.type === "goal") ? (edit.start || t) : t;
@@ -784,6 +799,8 @@ function openSheet(it, type){
   $("#fRepeat").value = edit.repeat || "none";
   $("#fStart").value = edit.type==="activity" ? (edit.start||"07:00") : "07:00";
   $("#fEnd").value = edit.type==="activity" ? (edit.end||"") : "";
+  if(!Array.isArray(edit.days)) edit.days = [];
+  $("#fActDate").value = (edit.type==="activity" && edit.date) ? edit.date : (dmode === "day" && view === "today" ? selDay : t);
   $("#fGStart").value = edit.start_g;
   $("#fDeadline").value = edit.deadline || "";
   $("#typeSeg").querySelectorAll("button").forEach(b => b.disabled = !!it && b.dataset.type !== edit.type);
@@ -811,6 +828,7 @@ function paintType(){
 function paintDays(){
   $("#fDays").innerHTML = WEEK_ORDER.map(d => `<button type="button" data-day="${d}" aria-pressed="${edit.days.includes(d)}">${DOW_SHORT[d]}</button>`).join("")
     + `<button type="button" data-day="all" aria-pressed="false">Every day</button>`;
+  $("#fActDateWrap").hidden = edit.days.length > 0;
 }
 function currentAllDay(){ return edit.type === "goal" || (edit.type === "reminder" && !$("#fTime").value); }
 function paintAlerts(){
@@ -833,7 +851,10 @@ function readForm(){
   } else if(e.type === "activity"){
     e.start = $("#fStart").value; e.end = $("#fEnd").value;
     if(!e.start) return [null, "Pick a start time."];
-    if(!e.days.length) return [null, "Pick at least one day."];
+    if(!e.days.length){
+      e.date = $("#fActDate").value;
+      if(!e.date) return [null, "Pick a date for this one-time activity."];
+    } else e.date = "";
     if(e.end && mins(e.end) <= mins(e.start)) return [null, "The end time must be after the start time."];
   } else {
     e.start = $("#fGStart").value; e.deadline = $("#fDeadline").value;
@@ -841,7 +862,7 @@ function readForm(){
     if(e.start && e.deadline < e.start) return [null, "The deadline must be after the start date."];
   }
   if(!e.title) return [null, "Give it a title."];
-  const keep = {reminder:["date","time","repeat"], activity:["start","end","days","doneDates"], goal:["start","deadline","done"]}[e.type];
+  const keep = {reminder:["date","time","repeat"], activity:["start","end","days","date","doneDates"], goal:["start","deadline","done"]}[e.type];
   const out = {id:e.id, type:e.type, title:e.title, notes:e.notes, alerts:e.alerts.slice().sort((a,b)=>b-a), created:e.created, cal:e.cal||null};
   keep.forEach(k => out[k] = e[k] ?? (k==="doneDates" ? [] : k==="done" ? false : ""));
   return [out, null];
