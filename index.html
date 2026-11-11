@@ -738,7 +738,7 @@ function viewReport(){
       <p class="muted small">Your items are saved only on this phone. Copy a backup now and then, and keep it in Notes, so you can restore it on a new phone.</p>
       <div class="grp"><button class="btn sm" data-act="copybackup">Copy backup</button><button class="btn sm ghost" data-act="showrestore">Restore from backup</button></div>
       <div id="restoreBox" class="sec" hidden>
-        <label class="f">Paste your backup here<textarea id="restoreText" placeholder='[{"type":"reminder", …}]'></textarea></label>
+        <label class="f">Paste your backup text or import link here<textarea id="restoreText" placeholder="https://…#import=…  or  [{&quot;type&quot;:&quot;reminder&quot;, …}]"></textarea></label>
         <div><button class="btn sm" data-act="restore">Restore</button></div>
       </div>
     </section>
@@ -887,9 +887,15 @@ function mergeItems(list){
   persist(); render();
   return {added, updated};
 }
+function decodeImport(code){
+  let b64 = code.trim().replace(/-/g,"+").replace(/_/g,"/"); while(b64.length % 4) b64 += "=";
+  return JSON.parse(decodeURIComponent(Array.prototype.map.call(atob(b64), c => "%" + c.charCodeAt(0).toString(16).padStart(2,"0")).join("")));
+}
 function restore(){
   try {
-    const r = mergeItems(JSON.parse($("#restoreText").value.trim()));
+    const raw = $("#restoreText").value.trim();
+    const link = raw.match(/#import=([A-Za-z0-9_\-]+)/);
+    const r = mergeItems(link ? decodeImport(link[1]) : JSON.parse(raw));
     toast(`Restored: ${r.added} new, ${r.updated} updated.`);
   } catch(e){ toast("That text isn't a Promemoria backup. Copy the whole backup and try again.", 5000); }
 }
@@ -897,9 +903,7 @@ function importFromHash(){
   const m = location.hash.match(/^#import=(.+)$/);
   if(!m) return false;
   try {
-    let b64 = m[1].replace(/-/g,"+").replace(/_/g,"/"); while(b64.length % 4) b64 += "=";
-    const json = decodeURIComponent(Array.prototype.map.call(atob(b64), c => "%" + c.charCodeAt(0).toString(16).padStart(2,"0")).join(""));
-    const r = mergeItems(JSON.parse(json));
+    const r = mergeItems(decodeImport(m[1]));
     setTimeout(() => toast(`Loaded ${r.added + r.updated} items into Promemoria.`, 5000), 300);
   } catch(e){ setTimeout(() => toast("This import link is broken. Ask for a new one.", 5000), 300); }
   try { history.replaceState(null, "", location.pathname + "#today"); } catch(e){ location.hash = "today"; }

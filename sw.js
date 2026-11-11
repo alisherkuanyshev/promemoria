@@ -1,5 +1,5 @@
 // Promemoria offline support: show the saved copy instantly, refresh it in the background.
-const CACHE = "promemoria-v1";
+const CACHE = "promemoria-v2";
 const FILES = ["./", "./index.html", "./manifest.json", "./apple-touch-icon.png", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", e => {
