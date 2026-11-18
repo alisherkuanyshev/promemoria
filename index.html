@@ -114,6 +114,14 @@ p{margin:0}
 .pick > input, .pick > .f{flex:1 1 0; min-width:0}
 .nav{width:44px; height:44px; flex:none; border-radius:10px; border:1px solid var(--line); background:var(--surface); color:var(--ink); font-size:22px; line-height:1; padding:0}
 .day-head{display:flex; justify-content:space-between; align-items:baseline; gap:10px}
+.swipe-hint{font-size:12px; color:var(--muted); text-align:center}
+#daySec{touch-action:pan-y}
+@media (prefers-reduced-motion:no-preference){
+  .slide-prev{animation:slidePrev .22s ease-out}
+  .slide-next{animation:slideNext .22s ease-out}
+  @keyframes slidePrev{from{transform:translateX(-36px); opacity:.25}}
+  @keyframes slideNext{from{transform:translateX(36px); opacity:.25}}
+}
 
 .days{display:flex; gap:3px; flex-wrap:wrap}
 .days i{font-style:normal; font-size:10px; font-weight:700; width:20px; height:20px; border-radius:6px; display:grid; place-items:center; background:var(--surface-2); color:var(--muted); border:1px solid var(--line)}
@@ -588,7 +596,8 @@ function pickerBar(){
       <input type="date" id="pickDay" value="${selDay}" aria-label="Pick a day">
       <button class="nav" data-shift="1" aria-label="Next day">›</button>
       ${selDay !== t ? `<button class="btn sm ghost" data-act="gotoday">Today</button>` : ""}
-    </div>`;
+    </div>
+    <div class="swipe-hint">Swipe left for the previous day, right for the next day</div>`;
   const period = `<div class="pick">
       <label class="f">From<input type="date" id="pickFrom" value="${rFrom}"></label>
       <label class="f">To<input type="date" id="pickTo" value="${rTo}"></label>
@@ -609,7 +618,7 @@ function viewToday(){
     const d = parseYmd(selDay) || t;
     const b = dayBlock(d);
     const isToday = daysBetween(t, d) === 0;
-    body = `<section class="sec">
+    body = `<section class="sec" id="daySec">
       <div class="sec-head"><h2>${esc(dayTitle(d))}</h2>${b.acts?`<span class="muted small num">${b.done} of ${b.acts} done</span>`:""}</div>
       ${!isToday && Math.abs(daysBetween(t,d)) <= 1 ? `<div class="muted small" style="margin-top:-6px">${esc(fmtDate(d,{weekday:"long", day:"numeric", month:"long"}))}</div>` : ""}
       <div class="list">${b.html || emptyMsg(isToday ? "today" : "day")}</div>
@@ -946,7 +955,7 @@ document.addEventListener("click", e => {
     putItem(w); return;
   }
   if(d.dmode){ dmode = d.dmode; render(); return; }
-  if(d.shift){ selDay = ymd(addDays(parseYmd(selDay) || today0(), Number(d.shift))); render(); return; }
+  if(d.shift){ shiftDay(Number(d.shift)); return; }
   if(d.goaldone){ const it = items.find(x=>x.id===d.goaldone); if(!it) return; const w = clone(it); w.done = !w.done; putItem(w); if(w.done) toast("Goal achieved. Well done!"); return; }
   if(d.rtype){ report.type = d.rtype; try{ localStorage.setItem("promemoria.report", JSON.stringify(report)); }catch(_){} render(); return; }
   if(d.rdays !== undefined){ report.days = Number(d.rdays); try{ localStorage.setItem("promemoria.report", JSON.stringify(report)); }catch(_){} render(); return; }
@@ -974,6 +983,33 @@ document.addEventListener("click", e => {
   }
 });
 $("#sheet").addEventListener("submit", onSave);
+
+/* ---------- swipe between days (Today tab, One day mode) ---------- */
+function shiftDay(n){
+  selDay = ymd(addDays(parseYmd(selDay) || today0(), n));
+  render();
+  const sec = $("#daySec");
+  if(sec) sec.classList.add(n > 0 ? "slide-next" : "slide-prev");
+}
+let sw = null;
+const main = $("#main");
+main.addEventListener("touchstart", e => {
+  sw = null;
+  if(view !== "today" || dmode !== "day" || e.touches.length !== 1) return;
+  if(e.target.closest("input, select, textarea, .tbl-wrap")) return;
+  const p = e.touches[0];
+  if(p.clientX < 24 || p.clientX > window.innerWidth - 24) return; // leave the screen edges to iPhone's own back/forward swipes
+  sw = {x: p.clientX, y: p.clientY, t: Date.now()};
+}, {passive:true});
+main.addEventListener("touchend", e => {
+  if(!sw) return;
+  const p = e.changedTouches[0];
+  const dx = p.clientX - sw.x, dy = p.clientY - sw.y, dt = Date.now() - sw.t;
+  sw = null;
+  if(dt > 800 || Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return; // too slow, too short, or mostly vertical (scrolling)
+  shiftDay(dx < 0 ? -1 : 1); // finger moves left → previous day, right → next day
+}, {passive:true});
+main.addEventListener("touchcancel", () => { sw = null; }, {passive:true});
 document.addEventListener("change", e => {
   const id = e.target.id, v = e.target.value;
   if(!v) return;
