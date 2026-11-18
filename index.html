@@ -119,8 +119,8 @@ p{margin:0}
 @media (prefers-reduced-motion:no-preference){
   .slide-prev{animation:slidePrev .22s ease-out}
   .slide-next{animation:slideNext .22s ease-out}
-  @keyframes slidePrev{from{transform:translateX(-36px); opacity:.25}}
-  @keyframes slideNext{from{transform:translateX(36px); opacity:.25}}
+  @keyframes slidePrev{from{transform:translateX(-36px); opacity:.25}} /* previous day comes in from the left */
+  @keyframes slideNext{from{transform:translateX(36px); opacity:.25}}  /* next day comes in from the right */
 }
 
 .days{display:flex; gap:3px; flex-wrap:wrap}
@@ -597,7 +597,7 @@ function pickerBar(){
       <button class="nav" data-shift="1" aria-label="Next day">›</button>
       ${selDay !== t ? `<button class="btn sm ghost" data-act="gotoday">Today</button>` : ""}
     </div>
-    <div class="swipe-hint">Swipe left for the previous day, right for the next day</div>`;
+    <div class="swipe-hint">Swipe left for the next day, right for the previous day</div>`;
   const period = `<div class="pick">
       <label class="f">From<input type="date" id="pickFrom" value="${rFrom}"></label>
       <label class="f">To<input type="date" id="pickTo" value="${rTo}"></label>
@@ -1007,7 +1007,7 @@ main.addEventListener("touchend", e => {
   const dx = p.clientX - sw.x, dy = p.clientY - sw.y, dt = Date.now() - sw.t;
   sw = null;
   if(dt > 800 || Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return; // too slow, too short, or mostly vertical (scrolling)
-  shiftDay(dx < 0 ? -1 : 1); // finger moves left → previous day, right → next day
+  shiftDay(dx < 0 ? 1 : -1); // finger moves left → next day, right → previous day
 }, {passive:true});
 main.addEventListener("touchcancel", () => { sw = null; }, {passive:true});
 document.addEventListener("change", e => {
