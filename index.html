@@ -459,7 +459,8 @@ function plusTime(t, add){ const m = (mins(t) + add) % 1440; return `${pad(Math.
 // What the Calendar event depends on (not today's date), so an unchanged item stays "In Calendar".
 const SIG_FIELDS = {reminder:["title","notes","date","time","repeat","alerts"], activity:["title","notes","start","end","days","date","alerts"], goal:["title","notes","deadline","alerts"]};
 const eventSig = it => JSON.stringify((SIG_FIELDS[it.type]||[]).map(k => it[k] ?? ""));
-const calState = it => (it.cal && it.cal.sig === eventSig(it)) ? "in" : "pending";
+// Items of other kinds (e.g. notes saved by an earlier version) stay stored but are never sent to Calendar.
+const calState = it => !["reminder","activity","goal"].includes(it.type) ? "none" : (it.cal && it.cal.sig === eventSig(it)) ? "in" : "pending";
 
 function buildIcs(list){
   const stamp = new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d+/,"");
