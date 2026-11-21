@@ -53,10 +53,6 @@ button{cursor:pointer}
 .top .wrap{padding-block:12px 10px; display:flex; align-items:flex-end; justify-content:space-between; gap:12px}
 .brand{font-family:var(--f-display); font-weight:700; font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent)}
 .today-line{font-family:var(--f-display); font-weight:700; font-size:22px; line-height:1.15; text-wrap:balance}
-.hdr-right{display:flex; flex-direction:column; align-items:flex-end; gap:6px; min-width:0}
-.hdr-btn{display:inline-flex; align-items:center; gap:6px; border:1px solid var(--line); background:var(--surface); color:var(--accent); border-radius:999px; padding:5px 12px; font-size:13px; font-weight:700}
-.hdr-btn svg{width:16px; height:16px}
-.hdr-btn[aria-current="page"]{background:var(--accent); color:var(--accent-ink); border-color:transparent}
 .status{font-size:12px; color:var(--muted); text-align:right; min-width:0}
 .status b{display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--ok); margin-right:6px; vertical-align:1px}
 
@@ -96,16 +92,6 @@ p{margin:0}
 .when.rem{background:var(--rem-soft); color:var(--rem)}
 .when.act{background:var(--act-soft); color:var(--act)}
 .when .tm{font-family:var(--f-display); font-weight:700; font-size:15px}
-.when.note{background:var(--accent-soft); color:var(--accent); display:grid; place-items:center; min-height:44px}
-.when.note svg{width:22px; height:22px}
-.note-card{display:flex; flex-direction:column; gap:6px; width:100%; text-align:left; background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:14px}
-.note-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px}
-.note-top .t{font-family:var(--f-display); font-weight:700; font-size:17px; overflow-wrap:anywhere; min-width:0}
-.note-body{white-space:pre-wrap; overflow-wrap:anywhere; color:var(--ink); display:-webkit-box; -webkit-line-clamp:6; -webkit-box-orient:vertical; overflow:hidden}
-.note-meta{font-size:12px; color:var(--muted)}
-.chip.note{background:var(--accent-soft); color:var(--accent)}
-.row .s.clip{display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
-textarea.big{min-height:180px}
 .right{display:flex; flex-direction:column; align-items:flex-end; gap:4px; font-size:12px; color:var(--muted); text-align:right}
 .empty{padding:18px 14px; color:var(--muted); font-size:14px}
 
@@ -155,7 +141,6 @@ textarea{min-height:64px; resize:vertical}
 .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px}
 .seg{display:grid; grid-template-columns:repeat(3,1fr); background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:3px; gap:3px}
 .seg button{border:0; background:none; border-radius:9px; padding:8px 4px; font-weight:700; font-size:14px; color:var(--muted)}
-#typeSeg button{font-size:13px; padding-inline:2px}
 .seg button[aria-pressed="true"]{background:var(--surface); color:var(--ink); box-shadow:0 1px 3px rgba(0,0,0,.12)}
 .toggles{display:flex; flex-wrap:wrap; gap:6px}
 .toggles button{border:1px solid var(--line); background:var(--surface-2); border-radius:999px; padding:6px 11px; font-size:13px; font-weight:700; color:var(--muted)}
@@ -212,10 +197,7 @@ td .t{font-weight:700}
       <div class="brand">Promemoria</div>
       <div class="today-line" id="todayLine">Today</div>
     </div>
-    <div class="hdr-right">
-      <button class="hdr-btn" data-tab="report" aria-label="Report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M9 12h7M9 16h7M9 8h3"/></svg>Report</button>
-      <div class="status" id="status"><b></b>Saved on this phone</div>
-    </div>
+    <div class="status" id="status"><b></b>Saved on this phone</div>
   </div>
 </header>
 
@@ -231,7 +213,7 @@ td .t{font-weight:700}
     <button data-tab="reminders"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 21h4"/></svg>Reminders</button>
     <button data-tab="activities"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>Activities</button>
     <button data-tab="goals"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg>Goals</button>
-    <button data-tab="notes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14v11l-5 5H5z"/><path d="M14 20v-5h5M8.5 8.5h7M8.5 12h4"/></svg>Notes</button>
+    <button data-tab="report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M9 12h7M9 16h7M9 8h3"/></svg>Report</button>
   </div>
 </nav>
 
@@ -241,13 +223,12 @@ td .t{font-weight:700}
       <h2 id="sheetTitle">New item</h2>
       <button type="button" class="x" data-act="close" aria-label="Close">×</button>
     </div>
-    <div class="seg" id="typeSeg" role="group" aria-label="Type" style="grid-template-columns:repeat(4,1fr)">
+    <div class="seg" id="typeSeg" role="group" aria-label="Type">
       <button type="button" data-type="reminder">Reminder</button>
       <button type="button" data-type="activity">Activity</button>
       <button type="button" data-type="goal">Goal</button>
-      <button type="button" data-type="note">Note</button>
     </div>
-    <label class="f"><span id="fTitleLabel">Title</span><input type="text" id="fTitle" maxlength="120" placeholder="e.g. University, Morning run, Save €5,000"></label>
+    <label class="f">Title<input type="text" id="fTitle" maxlength="120" placeholder="e.g. University, Morning run, Save €5,000"></label>
 
     <div id="fsReminder" class="sec">
       <div class="grid2">
@@ -283,22 +264,12 @@ td .t{font-weight:700}
       </div>
     </div>
 
-    <div class="sec" id="alertsSec">
+    <div class="sec">
       <h3 id="alertsLabel">Alert me</h3>
       <div class="toggles" id="fAlerts" role="group" aria-label="Alerts"></div>
     </div>
 
-    <label class="f"><span id="fNotesLabel">Notes</span><textarea id="fNotes" maxlength="5000" placeholder="Room number, what to bring, why this matters…"></textarea></label>
-
-    <div id="fsNote" class="sec">
-      <div class="f">Show on a day (optional)
-        <div class="pick">
-          <input type="date" id="fNoteDate" aria-label="Day for this note">
-          <button type="button" class="btn sm ghost" data-act="nodate">No date</button>
-        </div>
-        <span class="muted small" style="font-weight:500">With a date, the note also appears on that day in the Today tab.</span>
-      </div>
-    </div>
+    <label class="f">Notes<textarea id="fNotes" maxlength="1000" placeholder="Room number, what to bring, why this matters…"></textarea></label>
 
     <div class="calbox" id="calBox" hidden>
       <p id="calText"></p>
@@ -332,11 +303,9 @@ const DAY_ALERTS = [[1,"1 day before"],[2,"2 days"],[7,"1 week"],[14,"2 weeks"],
 const TYPE = {
   reminder:{label:"Reminder"},
   activity:{label:"Activity"},
-  goal:{label:"Goal"},
-  note:{label:"Note"}
+  goal:{label:"Goal"}
 };
-const VIEWS = ["today","reminders","activities","goals","notes","report"];
-const NOTE_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14v11l-5 5H5z"/><path d="M14 20v-5h5M8.5 8.5h7M8.5 12h4"/></svg>`;
+const VIEWS = ["today","reminders","activities","goals","report"];
 
 /* ---------- helpers ---------- */
 const $ = s => document.querySelector(s);
@@ -490,7 +459,7 @@ function plusTime(t, add){ const m = (mins(t) + add) % 1440; return `${pad(Math.
 // What the Calendar event depends on (not today's date), so an unchanged item stays "In Calendar".
 const SIG_FIELDS = {reminder:["title","notes","date","time","repeat","alerts"], activity:["title","notes","start","end","days","date","alerts"], goal:["title","notes","deadline","alerts"]};
 const eventSig = it => JSON.stringify((SIG_FIELDS[it.type]||[]).map(k => it[k] ?? ""));
-const calState = it => it.type === "note" ? "none" : (it.cal && it.cal.sig === eventSig(it)) ? "in" : "pending";
+const calState = it => (it.cal && it.cal.sig === eventSig(it)) ? "in" : "pending";
 
 function buildIcs(list){
   const stamp = new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d+/,"");
@@ -581,46 +550,6 @@ function streakText(it){
   for(let i=0;i<7;i++){ const d = addDays(t,-i); if(actOn(it,d)){ sched++; if((it.doneDates||[]).includes(ymd(d))) n++; } }
   return `<span class="num">${n}/${sched} this week</span>`;
 }
-/* ---------- notes ---------- */
-// A note's title is what the person typed, or else the first line of the note.
-function noteParts(n){
-  const text = (n.notes || "").trim();
-  if(!n.autoTitle) return {title: n.title, body: text};
-  const nl = text.indexOf("\n");
-  return {title: n.title, body: nl >= 0 ? text.slice(nl + 1).trim() : ""};
-}
-function editedText(ms){
-  if(!ms) return "";
-  const d = new Date(ms); d.setHours(0,0,0,0);
-  const n = daysBetween(d, today0());
-  return n <= 0 ? "Edited today" : n === 1 ? "Edited yesterday" : n < 30 ? `Edited ${n} days ago` : `Edited ${fmtLong(d)}`;
-}
-function noteRow(n){
-  const p = noteParts(n);
-  return `<button class="row" data-edit="${esc(n.id)}">
-    <div class="when note" aria-hidden="true">${NOTE_SVG}</div>
-    <div class="main"><div class="t">${esc(p.title)}</div>${p.body ? `<div class="s clip">${esc(p.body)}</div>` : ""}</div>
-    <div class="right"><span class="chip note">Note</span></div>
-  </button>`;
-}
-function noteCard(n){
-  const p = noteParts(n);
-  const d = parseYmd(n.date);
-  return `<button class="note-card" data-edit="${esc(n.id)}">
-    <div class="note-top"><span class="t">${esc(p.title)}</span>${d ? `<span class="chip note num">${esc(fmtDate(d))}</span>` : ""}</div>
-    ${p.body ? `<div class="note-body">${esc(p.body)}</div>` : ""}
-    <div class="note-meta">${esc(editedText(n.updated))}</div>
-  </button>`;
-}
-function viewNotes(){
-  const notes = items.filter(i => i.type === "note").sort((a,b) => (b.updated||0) - (a.updated||0));
-  return `<div class="view">
-    <section class="sec"><div class="sec-head"><h2>Notes</h2><span class="muted small">Ideas and important things</span></div>
-      ${notes.length ? notes.map(noteCard).join("") : `<div class="list"><div class="empty">No notes yet. Tap + to write down an idea. Give it a date if you want to see it on that day.</div></div>`}
-    </section>
-  </div>`;
-}
-
 function goalCard(g, compact){
   const s = goalStats(g);
   return `<div class="goal-card">
@@ -633,7 +562,6 @@ function goalCard(g, compact){
 function calBanner(){
   const pending = items.filter(it => calState(it) === "pending");
   if(!pending.length) return "";
-  // (notes never go to Calendar: calState returns "none" for them)
   const changed = pending.filter(it => it.cal).length;
   return `<div class="banner"><p><b>${pending.length} ${pending.length===1?"item isn't":"items aren't"} in your iPhone Calendar${changed?" (or changed)":""}.</b> Add ${pending.length===1?"it":"them"} so your phone alerts you on time.</p><button class="btn sm" data-act="calall">Add to Calendar</button></div>`;
 }
@@ -655,9 +583,7 @@ function dayTitle(d){
 function dayBlock(d){
   const acts = items.filter(i => i.type==="activity" && actOn(i,d));
   const rems = items.filter(i => i.type==="reminder" && remOccurrences(i, d, d).length);
-  const notes = items.filter(i => i.type==="note" && i.date === ymd(d));
-  const rows = notes.map(n => ({t: -2, html: noteRow(n)}))
-    .concat(rems.map(i => ({t: i.time ? mins(i.time) : -1, html: remRow(i,d)})))
+  const rows = rems.map(i => ({t: i.time ? mins(i.time) : -1, html: remRow(i,d)}))
     .concat(acts.map(a => ({t: mins(a.start), html: actRow(a,true,d)})))
     .sort((a,b) => a.t - b.t);
   const done = acts.filter(a => (a.doneDates||[]).includes(ymd(d))).length;
@@ -844,9 +770,9 @@ function viewReport(){
 }
 
 function render(){
-  const v = {today:viewToday, reminders:viewReminders, activities:viewActivities, goals:viewGoals, notes:viewNotes, report:viewReport}[view] || viewToday;
+  const v = {today:viewToday, reminders:viewReminders, activities:viewActivities, goals:viewGoals, report:viewReport}[view] || viewToday;
   $("#main").innerHTML = v();
-  document.querySelectorAll(".tabs [data-tab], .hdr-btn[data-tab]").forEach(b => b.setAttribute("aria-current", b.dataset.tab === view ? "page" : "false"));
+  document.querySelectorAll(".tabs [data-tab]").forEach(b => b.setAttribute("aria-current", b.dataset.tab === view ? "page" : "false"));
   $("#fab").hidden = view === "report";
   $("#todayLine").textContent = fmtDate(new Date(), {weekday:"long", day:"numeric", month:"long"});
   $("#status").innerHTML = storageOk ? "<b></b>Saved on this phone" : "<b style='background:var(--bad)'></b>Not saving";
@@ -875,9 +801,8 @@ function openSheet(it, type){
   $("#delBtn").hidden = !it;
   $("#delBtn").textContent = "Delete"; $("#delBtn").className = "btn ghost";
   $("#formErr").hidden = true;
-  $("#fTitle").value = (edit.type === "note" && edit.autoTitle) ? "" : (edit.title || "");
+  $("#fTitle").value = edit.title || "";
   $("#fNotes").value = edit.notes || "";
-  $("#fNoteDate").value = edit.type === "note" ? (edit.date || "") : "";
   $("#fDate").value = edit.date || t;
   $("#fTime").value = edit.time || "";
   $("#fRepeat").value = edit.repeat || "none";
@@ -891,7 +816,7 @@ function openSheet(it, type){
   edit._ad = currentAllDay();
   paintType(); paintDays(); paintAlerts();
   const cb = $("#calBox");
-  if(it && it.type !== "note"){
+  if(it){
     cb.hidden = false;
     const st = calState(it);
     $("#calText").textContent = st === "in" ? "This is in your iPhone Calendar with its alerts. Tap again if it's missing there." : it.cal ? "You changed this item. Add it again to update your Calendar." : "Add this to your iPhone Calendar to get its alerts.";
@@ -899,7 +824,6 @@ function openSheet(it, type){
   $("#backdrop").hidden = false;
 }
 function defaultAlerts(it){
-  if(it.type === "note") return [];
   if(it.type === "goal") return [7];
   if(it.type === "activity") return [10];
   return it.time ? [1440, 60] : [1];
@@ -909,14 +833,6 @@ function paintType(){
   $("#fsReminder").hidden = edit.type !== "reminder";
   $("#fsActivity").hidden = edit.type !== "activity";
   $("#fsGoal").hidden = edit.type !== "goal";
-  const isNote = edit.type === "note";
-  $("#fsNote").hidden = !isNote;
-  $("#alertsSec").hidden = isNote;
-  $("#fTitleLabel").textContent = isNote ? "Title (optional)" : "Title";
-  $("#fTitle").placeholder = isNote ? "e.g. Business idea" : "e.g. University, Morning run, Save €5,000";
-  $("#fNotesLabel").textContent = isNote ? "Note" : "Notes";
-  $("#fNotes").placeholder = isNote ? "Write your idea or anything important…" : "Room number, what to bring, why this matters…";
-  $("#fNotes").classList.toggle("big", isNote);
 }
 function paintDays(){
   $("#fDays").innerHTML = WEEK_ORDER.map(d => `<button type="button" data-day="${d}" aria-pressed="${edit.days.includes(d)}">${DOW_SHORT[d]}</button>`).join("")
@@ -949,19 +865,13 @@ function readForm(){
       if(!e.date) return [null, "Pick a date for this one-time activity."];
     } else e.date = "";
     if(e.end && mins(e.end) <= mins(e.start)) return [null, "The end time must be after the start time."];
-  } else if(e.type === "note"){
-    e.date = $("#fNoteDate").value || "";
-    if(!e.title && !e.notes) return [null, "Write something first."];
-    e.autoTitle = !e.title;
-    if(e.autoTitle){ const first = e.notes.split("\n")[0].trim(); e.title = first.length > 80 ? first.slice(0, 78) + "…" : first; }
-    e.alerts = [];
   } else {
     e.start = $("#fGStart").value; e.deadline = $("#fDeadline").value;
     if(!e.deadline) return [null, "Pick a deadline."];
     if(e.start && e.deadline < e.start) return [null, "The deadline must be after the start date."];
   }
   if(!e.title) return [null, "Give it a title."];
-  const keep = {reminder:["date","time","repeat"], activity:["start","end","days","date","doneDates"], goal:["start","deadline","done"], note:["date","autoTitle"]}[e.type];
+  const keep = {reminder:["date","time","repeat"], activity:["start","end","days","date","doneDates"], goal:["start","deadline","done"]}[e.type];
   const out = {id:e.id, type:e.type, title:e.title, notes:e.notes, alerts:e.alerts.slice().sort((a,b)=>b-a), created:e.created, cal:e.cal||null};
   keep.forEach(k => out[k] = e[k] ?? (k==="doneDates" ? [] : k==="done" ? false : ""));
   return [out, null];
@@ -972,7 +882,7 @@ function onSave(ev){
   if(err){ const el = $("#formErr"); el.textContent = err; el.hidden = false; return; }
   closeSheet();
   putItem(it);
-  toast(calState(it) !== "pending" ? "Saved" : "Saved. Tap “Add to Calendar” at the top to get alerts.", 4500);
+  toast(calState(it) === "in" ? "Saved" : "Saved. Tap “Add to Calendar” at the top to get alerts.", 4500);
 }
 function onDelete(){
   if(!delArmed){
@@ -1000,7 +910,7 @@ function mergeItems(list){
   if(!Array.isArray(list)) throw new Error("not a list");
   let added = 0, updated = 0;
   for(const raw of list){
-    if(!raw || typeof raw !== "object" || !raw.id || !["reminder","activity","goal","note"].includes(raw.type) || !raw.title) continue;
+    if(!raw || typeof raw !== "object" || !raw.id || !["reminder","activity","goal"].includes(raw.type) || !raw.title) continue;
     const i = items.findIndex(x => x.id === raw.id);
     if(i >= 0){ items[i] = raw; updated++; } else { items.push(raw); added++; }
   }
@@ -1057,8 +967,7 @@ document.addEventListener("click", e => {
   }
   if(d.alert && edit){ const n = Number(d.alert); edit.alerts = edit.alerts.includes(n) ? edit.alerts.filter(x=>x!==n) : edit.alerts.concat(n); paintAlerts(); return; }
   switch(d.act){
-    case "new": { const map = {reminders:"reminder", activities:"activity", goals:"goal", notes:"note"}; openSheet(null, map[view] || "reminder"); return; }
-    case "nodate": $("#fNoteDate").value = ""; return;
+    case "new": { const map = {reminders:"reminder", activities:"activity", goals:"goal"}; openSheet(null, map[view] || "reminder"); return; }
     case "close": closeSheet(); return;
     case "delete": onDelete(); return;
     case "gotoday": selDay = ymd(today0()); render(); return;
